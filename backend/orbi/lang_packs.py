@@ -48,15 +48,17 @@ def get_pack_def(pack_id: str) -> dict[str, Any] | None:
 
 def _matches_grammar(stem: str, grammar: str) -> bool:
     s, g = stem.lower(), grammar.lower()
+    if s.startswith("lib"):
+        s = s[3:]
+    if s.startswith("tree_sitter_"):
+        s = s[12:]
     if g == "c":
-        return s == "tree_sitter_c"
+        return s == "c"
     if g == "cpp":
-        return s == "tree_sitter_cpp"
+        return s == "cpp"
     if g in ("c_sharp", "csharp"):
-        return s in ("tree_sitter_c_sharp", "tree_sitter_csharp")
-    if g == "javascript":
-        return s == "tree_sitter_javascript" or s.startswith("tree_sitter_javascript_")
-    return s == f"tree_sitter_{g}" or s.startswith(f"tree_sitter_{g}_")
+        return s in ("c_sharp", "csharp")
+    return s == g or s.startswith(f"{g}_")
 
 
 def _get_removed_markers(cache_dir: Path) -> set[str]:

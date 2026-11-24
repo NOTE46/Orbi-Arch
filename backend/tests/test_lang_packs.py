@@ -327,3 +327,69 @@ def test_install_pack_downloads_as_list_not_str(tmp_path: Path):
         assert not isinstance(call_arg, str)
         assert st.id == "csharp"
 
+
+def test_cross_platform_grammar_detection_and_no_c_false_match(tmp_path: Path):
+    """Verify Linux (.so), macOS (.dylib), and Windows (.dll) recognition and strict 'c' matching."""
+    cache_dir = tmp_path / "cache"
+    libs_dir = cache_dir / "libs"
+    libs_dir.mkdir(parents=True)
+
+    # 1. Stem matching unit checks across prefixes and extensions
+    assert _matches_grammar("libtree_sitter_python", "python") is True
+    assert _matches_grammar("python", "python") is True
+    assert _matches_grammar("libpython", "python") is True
+    assert _matches_grammar("tree_sitter_python", "python") is True
+    assert _matches_grammar("libtree_sitter_c", "c") is True
+    assert _matches_grammar("libc", "c") is True
+    assert _matches_grammar("c", "c") is True
+    assert _matches_grammar("libtree_sitter_rust", "rust") is True
+    assert _matches_grammar("libtree_sitter_javascript_orchard", "javascript") is True
+
+    # Strict isolation for C: cpp, c_sharp, csharp never match c
+    assert _matches_grammar("libtree_sitter_cpp", "c") is False
+    assert _matches_grammar("libcpp", "c") is False
+    assert _matches_grammar("libtree_sitter_csharp", "c") is False
+    assert _matches_grammar("libtree_sitter_c_sharp", "c") is False
+    assert _matches_grammar("libcsharp", "c") is False
+    assert _matches_grammar("libc_sharp", "c") is False
+
+    # 2. Filesystem checks in isolated tmp_path
+    (libs_dir / "libtree_sitter_python.so").write_bytes(b"linux_python")
+    (libs_dir / "libtree_sitter_c.so").write_bytes(b"linux_c")
+    (libs_dir / "libtree_sitter_cpp.so").write_bytes(b"linux_cpp")
+    (libs_dir / "libtree_sitter_csharp.so").write_bytes(b"linux_csharp")
+    (libs_dir / "libtree_sitter_rust.dylib").write_bytes(b"macos_rust")
+    (libs_dir / "tree_sitter_typescript.dll").write_bytes(b"win_ts")
+    (libs_dir / "tree_sitter_tsx.dll").write_bytes(b"win_tsx")
+    (libs_dir / "tree_sitter_javascript_orchard.dll").write_bytes(b"win_js")
+
+    # Verify find_grammar_files
+    py_files = find_grammar_files("python", cache_dir)
+    assert len(py_files) == 1
+    assert py_files[0].name == "libtree_sitter_python.so"
+
+    c_files = find_grammar_files("c", cache_dir)
+    assert len(c_files) == 1
+    assert c_files[0].name == "libtree_sitter_c.so"
+
+    cpp_files = find_grammar_files("cpp", cache_dir)
+    assert len(cpp_files) == 1
+    assert cpp_files[0].name == "libtree_sitter_cpp.so"
+
+    cs_files = find_grammar_files("c_sharp", cache_dir)
+    assert len(cs_files) == 1
+    assert cs_files[0].name == "libtree_sitter_csharp.so"
+
+    rust_files = find_grammar_files("rust", cache_dir)
+    assert len(rust_files) == 1
+    assert rust_files[0].name == "libtree_sitter_rust.dylib"
+
+    # Verify is_pack_installed
+    assert is_pack_installed("python", cache_dir) is True
+    assert is_pack_installed("c_cpp", cache_dir) is True
+    assert is_pack_installed("csharp", cache_dir) is True
+    assert is_pack_installed("rust", cache_dir) is True
+    assert is_pack_installed("ts_js", cache_dir) is True
+    assert is_pack_installed("go", cache_dir) is False
+
+

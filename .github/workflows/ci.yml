@@ -34,7 +34,7 @@ jobs:
 
       - name: Pre-cache Tree-sitter grammars
         run: |
-          python -c "from orbi.lang_packs import install_pack; install_pack('python'); install_pack('ts_js')"
+          python -c "from orbi.lang_packs import install_pack, is_pack_installed; install_pack('python'); install_pack('ts_js'); assert is_pack_installed('python') and is_pack_installed('ts_js'), 'Packs not detected on disk'"
         env:
           PYTHONPATH: backend
 
