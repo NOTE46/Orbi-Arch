@@ -307,3 +307,23 @@ def test_fastapi_languages_endpoints_and_sse_warning(tmp_path: Path):
         assert complete_ev is not None
         warnings = complete_ev.get("warnings", [])
         assert any("Missing language pack(s): Go" in w for w in warnings)
+
+
+def test_install_pack_downloads_as_list_not_str(tmp_path: Path):
+    """Verify install_pack passes list[str] to tslp.download for Rust binding compatibility."""
+    cache_dir = tmp_path / "cache"
+    cache_dir.mkdir(parents=True)
+
+    with (
+        patch("tree_sitter_language_pack.configure") as mock_conf,
+        patch("tree_sitter_language_pack.download") as mock_dl,
+    ):
+        st = install_pack("csharp", cache_dir)
+        mock_conf.assert_called_once()
+        mock_dl.assert_called_once_with(["csharp"])
+        call_arg = mock_dl.call_args[0][0]
+        assert isinstance(call_arg, list)
+        assert call_arg == ["csharp"]
+        assert not isinstance(call_arg, str)
+        assert st.id == "csharp"
+

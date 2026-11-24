@@ -139,7 +139,7 @@ def install_pack(
         import tree_sitter_language_pack as tslp
         tslp.configure(tslp.PackConfig(cache_dir=str(c_dir)))
         for g in pack["grammars"]:
-            tslp.download("csharp" if g == "c_sharp" else g)
+            tslp.download(["csharp" if g == "c_sharp" else g])
 
     return next((s for s in list_packs(c_dir) if s.id == pack_id), LanguagePackStatus(
         id=pack["id"], label=pack["label"], extensions=pack["extensions"],
