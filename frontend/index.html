@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ORBI-ARCH</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%236366f1'/%3E%3C/svg%3E" />
+    <script>
+      (function () {
+        var m = 'system';
+        try { var s = localStorage.getItem('orbi.v01.theme'); if (s === 'dark' || s === 'light') m = s; } catch (e) {}
+        var d = m === 'dark';
+        if (m === 'system') { try { d = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) {} }
+        document.documentElement.classList.toggle('dark', d);
+        document.documentElement.style.colorScheme = d ? 'dark' : 'light';
+        try {
+          var fontSizes = {
+            'auto': 'clamp(16px, 0.25vw + 13px, 20px)',
+            'sm': '16px',
+            'md': '18px',
+            'lg': '20px'
+          };
+          var f = localStorage.getItem('orbi.v01.fontSize');
+          if (f === 'xl') f = 'lg';
+          if (f === 'custom') {
+            var rawPx = parseInt(localStorage.getItem('orbi.v01.customFontSize'), 10);
+            var px = (!isNaN(rawPx) && isFinite(rawPx)) ? Math.min(26, Math.max(14, Math.round(rawPx))) : 18;
+            document.documentElement.style.fontSize = px + 'px';
+          } else {
+            document.documentElement.style.fontSize = fontSizes[f] || fontSizes['auto'];
+          }
+        } catch (e) {
+          document.documentElement.style.fontSize = 'clamp(16px, 0.25vw + 13px, 20px)';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

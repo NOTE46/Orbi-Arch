@@ -1,0 +1,42 @@
+# Python & Backend
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+backend/.cache/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite*
+
+# Frontend & Node
+node_modules/
+frontend/dist/
+dist/
+*.tsbuildinfo
+.vite/
+
+# Secrets & Environment
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*service-account*.json
+
+# Temp, Logs & OS / IDE
+*.tmp
+*.log
+*.bak
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json

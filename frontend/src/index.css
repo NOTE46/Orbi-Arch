@@ -1,0 +1,86 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ACCESSIBILITY: verified = solid (border-solid) + --verified; inferred = dashed (border-dashed) + --inferred. Never rely on color alone. */
+
+:root {
+  --bg-base: #f6f7fb;
+  --bg-surface: #ffffff;
+  --bg-elevated: #eef0f6;
+  --border-line: #e2e6f0;
+  --text-fg: #11131a;
+  --text-muted: #5a6378;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --verified: #047857;
+  --inferred: #b45309;
+  color-scheme: light;
+}
+
+.dark {
+  --bg-base: #101218;
+  --bg-surface: #151821;
+  --bg-elevated: #1d212d;
+  --border-line: #272c3b;
+  --text-fg: #f3f4f8;
+  --text-muted: #8b93a7;
+  --accent: #6366f1;
+  --accent-hover: #7578f6;
+  --verified: #10b981;
+  --inferred: #f59e0b;
+  color-scheme: dark;
+}
+
+/* --color-canvas (not "base") avoids colliding with Tailwind's text-base font size */
+@theme inline {
+  --color-canvas: var(--bg-base);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-line: var(--border-line);
+  --color-fg: var(--text-fg);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-verified: var(--verified);
+  --color-inferred: var(--inferred);
+}
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { @apply bg-canvas text-fg antialiased; }
+  * { scrollbar-width: thin; scrollbar-color: var(--border-line) transparent; }
+  :focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+}
+
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
+.orbi-hero-glow {
+  background: radial-gradient(60% 42% at 50% 8%, rgba(79, 70, 229, 0.06), transparent 72%);
+}
+
+.dark .orbi-hero-glow {
+  background: radial-gradient(60% 42% at 50% 8%, rgba(99, 102, 241, 0.12), transparent 72%);
+}
+
+.react-flow {
+  --xy-background-color: var(--bg-base);
+  --xy-node-background-color: var(--bg-surface);
+  --xy-node-border-default: 1px solid var(--border-line);
+  --xy-edge-stroke-default: var(--border-line);
+  --xy-edge-stroke-selected: var(--accent);
+  --xy-selection-background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  --xy-selection-border-default: var(--accent);
+  --xy-attribution-background-color: transparent;
+}
